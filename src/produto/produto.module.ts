@@ -4,6 +4,8 @@ import { ProdService } from './produto.service';
 import { Prod } from './produto.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+
+
 @Module({
   imports: [TypeOrmModule.forFeature([Prod])],
   controllers: [ProdController],

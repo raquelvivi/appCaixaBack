@@ -31,6 +31,20 @@ export class ProdService {
     }
     return algo;
   }
+
+  async getProdNome(codigo: string): Promise<Prod> {
+
+    const result = await this.prodRepository.query(
+      "SELECT * FROM Produto WHERE unaccent(nome) ILIKE unaccent($1)",
+      [`%${codigo}%`],
+    );
+
+    if (result.length === 0) {
+      // Se tiver algum erro apareça mensagem de erro com o codigo de barras
+      throw new NotFoundException(`{o codigo com o numero ${codigo} não foi achado}`);
+    }
+    return result;
+  }
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa de produtos com o nome
   /////////////////////////////////////////

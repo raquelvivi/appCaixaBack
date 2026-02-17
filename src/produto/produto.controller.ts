@@ -16,12 +16,20 @@ export class ProdController {
     return this.ProdService.getProds();
   }
 
+
+  @Get('label/:codigo')
+  getProdNome(@Param('codigo') codigo: string): Promise<Prod> {
+    return this.ProdService.getProdNome(codigo);
+  }
+
   //Pesquisa de produtos com o codigo de barras
 
   @Get(':codigo')
   getProd(@Param('codigo') codigo: string): Promise<Prod> {
     return this.ProdService.getProd(codigo);
   }
+
+  
 
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa de produtos com o nome
@@ -49,4 +57,3 @@ export class ProdController {
     return this.ProdService.remove(codigo);
   }
 }
-
