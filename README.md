@@ -2,9 +2,9 @@
 
 #### O App Caixa Back é o Back end do ecossistema App Caixa. O projeto completo é integrado ao repositório: [App Caixa Front](https://github.com/raquelvivi/AppCaixaFront).
 
-#### Este sistema web foi desenvolvido especificamente para a gestão comercial de mercados e quitandas. A solução surgiu da necessidade real de mapear o fluxo de vendas, controle de estoque e margem de lucro de um comércio local. O projeto consolida anos de experiência no setor de vendas, traduzindo necessidades práticas em funcionalidades de controle financeiro, gestão de perdas, compras e conformidade com taxas governamentais.
+#### Este sistema web foi desenvolvido especificamente para a gestão comercial de mercados e kitandas. A solução surgiu da necessidade real de mapear o fluxo de vendas, controle de estoque e margem de lucro de um comércio local. O projeto consolida anos de experiência no setor de vendas, traduzindo necessidades práticas em funcionalidades de controle financeiro, gestão de perdas, compras e conformidade com taxas governamentais.
 
-#### O principal objetivo do projeto é implementar uma gestão estratégica na Quitanda do Vitor (empresa de médio porte). Anteriormente, a empresa operava sem métricas de diagnóstico ou previsões futuras, enfrentando um cenário de endividamento crescente. O sistema visa sanar lacunas de inteligência de negócio, respondendo a perguntas fundamentais como: "Qual o lucro real da operação?" e "Qual a viabilidade financeira do modelo de negócio?".
+#### O principal objetivo do projeto é implementar uma gestão estratégica na Kitanda do Vitor (empresa de médio porte). Anteriormente, a empresa operava sem métricas de diagnóstico ou previsões futuras, enfrentando um cenário de endividamento crescente. O sistema visa sanar lacunas de inteligência de negócio, respondendo a perguntas fundamentais como: "Qual o lucro real da operação?" e "Qual a viabilidade financeira do modelo de negócio?".
 
 #### Atualmente, o sistema encontra-se em fase de desenvolvimento, com as funcionalidades principais de interface já operacionais. O projeto adota a metodologia ágil Scrum, focando em ciclos de entrega rápidos e melhoria contínua do produto.
 
