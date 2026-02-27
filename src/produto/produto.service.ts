@@ -20,16 +20,14 @@ export class ProdService {
     return this.prodRepository.find();
   }
 
+
   //Pesquisa de produtos com o codigo de barras
-
   async getProd(codigo: string): Promise<Prod> {
-    let algo = await this.prodRepository.findOneBy({ codigo }); // pesquisa apenas um produto
+   
+    const algo = await this.prodRepository.query(
+      `SELECT * FROM Produto WHERE codigo = '${codigo}'`); 
 
-    if (!algo) {
-      // Se tiver algum erro apareça mensagem de erro com o codigo de barras
-      throw new NotFoundException(`{o codigo com o numero ${codigo} não foi achado}`);
-    }
-    return algo;
+    return algo; 
   }
 
   async getProdNome(codigo: string): Promise<Prod> {

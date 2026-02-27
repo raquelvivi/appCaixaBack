@@ -21,7 +21,7 @@ export class VendedorService {
   
 
   getVendedors(): Promise<Vendedor[]> {
-    return this.vendedorRepository.find(); // fazer a pesquisa no repositorio
+    return this.vendedorRepository.find(); 
   }
 
   async getVendedor(id: number): Promise<Vendedor> {
@@ -35,7 +35,10 @@ export class VendedorService {
   }
 
   async addVendedor(vendedor: Vendedor): Promise<Vendedor> {
-    let algo = await this.vendedorRepository.save(vendedor);
+
+    let algo = await this.vendedorRepository.query
+    (`INSERT INTO vendedor (nome, cnpj, contato, vindames) VALUES ($1, $2, $3, $4)`, 
+    [vendedor.nome, vendedor.cnpj, vendedor.contato, vendedor.vindames]);
 
     if (!algo) {
       throw new NotFoundException(`{não foi possivel cadastrar}`)

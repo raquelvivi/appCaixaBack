@@ -18,7 +18,7 @@ export class Vendedor {
   contato: string;
 
   @Column()
-  vindaMes: number;
+  vindames: number;
 
   @Column({ type: 'date' })
   criado_em: Date;
