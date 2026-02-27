@@ -28,8 +28,6 @@ export class CompraTController {
 
   @Post()
     addCompraT(@Body('compra') compra: string, @Body('item') item: ItemCompra[]): Promise<{ item: ItemCompra }> {
-      console.log(compra);
-      console.log(item);
     return this.compraService.addCompraT(compra, item);
   }
 

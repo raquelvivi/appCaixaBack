@@ -2,7 +2,7 @@ create table Produto (
 codigo varchar(200) Primary Key ,
 nome varchar(100) not null,  
 validade date null,
-quant INTEGER not null DEFAULT 0,
+quant double precision not null DEFAULT 0,
 precoCompra double precision null,
 precoVenda double precision not null,
 categoria varchar (50) null,
@@ -109,7 +109,7 @@ create table CompraT (
 create table ItemCompra (
 
 	id serial primary key,
-	quant integer not null,
+	quant double precision not null,
 	preco double precision,
 	fkProduto varchar(200),
 	fkCompraT integer,

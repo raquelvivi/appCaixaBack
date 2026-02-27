@@ -79,21 +79,21 @@ export class CompraTService {
   // }
 
 
+//  Cadastro de Compras
   async addCompraT(compraP: string, item: ItemCompra[]): Promise<{ item: ItemCompra }> {
-    console.log("Entrei no service");
     
-    const queryRunner = this.dataSource.createQueryRunner();
+    const queryRunner = this.dataSource.createQueryRunner(); 
 
-    await queryRunner.connect();
+    await queryRunner.connect(); // conecta ao banco
 
     await queryRunner.startTransaction(); // BEGIN, inicio da transação
       
+
     try{ 
-    
-      
 
       let totalV = 0;
 
+      //calculo do valor total da compra
       for (let index = 0; index < item.length; index++) {
 
         const element = item[index];
@@ -102,54 +102,49 @@ export class CompraTService {
 
       }
 
-      const compraFeita = await this.comprasRepository.query( // ID da compra feita
-            `INSERT INTO compraT (total, pagamento) VALUES (${totalV}, '${compraP}') RETURNING id`)
 
-      console.log(compraFeita[0].id);
+      totalV = parseFloat(totalV.toFixed(2)); // arredonda para 2 casas decimais
+
+      const compraFeita = await this.comprasRepository.query( 
+            `INSERT INTO compraT (total, pagamento) VALUES (${totalV}, '${compraP}') RETURNING id`)// ID da compra feita
 
 
-          //Editando a tabela Produto
+          //para cada item comprado, atualiza a quantidade do produto e insere o itemCompra
       for (let index = 0; index < item.length; index++) {
         
         const element = item[index];
 
-         //console.log( `Quantidade Comprada = ${element.quantComprada}, Preco = ${element.preco}, ID Produto = ${element.id}, ID Compra = ${compraFeita.rows[0].id}`);
-
 
         let quantCompra = element.quantAntesCompra - element.quantComprada;
 
-        if (quantCompra < 0) {
+        if (quantCompra < 0) { // para não ter produtos com quantidade negativa
           quantCompra = 0;
         }
 
-        console.log("Antes do update do produto");
+        quantCompra = parseFloat(quantCompra.toFixed(3)); // arredonda para 2 casas decimais
        
+        //Editando a tabela Produto
         const algoP = await this.comprasRepository.query
         (`UPDATE produto SET quant = ${quantCompra} WHERE codigo = '${(element.id)}'`);
 
-        console.log("Antes do insert na tabela itemCompra");
-        
+
+        //Inserindo na tabela cada item comprado
         await this.comprasRepository.query
         (`INSERT INTO itemCompra (quant, preco, fkproduto, fkcomprat) 
           VALUES (${element.quantComprada}, ${element.preco}, ${element.id}, ${compraFeita[0].id})`);
             
         }
 
-        console.log("Utima etapa do for");
-
-      
-
-      
        await queryRunner.commitTransaction(); // COMMIT
 
-       return compraFeita[0].id;
+       return compraFeita[0].id; // retorna o ID da compra feita para o front
 
     }catch(error){
       await queryRunner.rollbackTransaction(); // ROLLBACK, desfaz as operações feitas no banco
       throw error;
     }finally {
 
-    await queryRunner.release(); // libera conexão do pool
+    await queryRunner.release(); // libera conexão do pool para não travar o banco
 
   }
   }
