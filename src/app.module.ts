@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ProdModule } from './produto/produto.module';
-// import { ExameModule } from './exame/exame.module';
-// import { ConsultaModule } from './consulta/consulta.module';
+import { VendedorModule } from './vendedor/vendedor.module';
+import { CompraTModule } from './compra/compras.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 
@@ -16,11 +16,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       password: 'Itabor1i',
       database: 'vitorK',
       autoLoadEntities: true,
-      synchronize: false, // para que essa bosta serve????????????
+      synchronize: false, // não edita meu banco
     }),
     ProdModule,
-    // ExameModule,
-    // ConsultaModule,
+    VendedorModule,
+    CompraTModule,
   ],
 })
 export class AppModule { }
