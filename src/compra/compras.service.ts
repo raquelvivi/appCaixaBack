@@ -31,20 +31,20 @@ export class CompraTService {
 
 
 
-  async getCompras(): Promise<CompraT[]> {
-    let algo = await this.comprasRepository.query(
-      `SELECT p.nome AS "paciente",
-        p.id, c.hora, c.data,
-        m.nome AS "medico",
-        h.nome AS "hospital"
-        from pessoa p 
-        inner join CompraT c on p.id = c.pessoa
-        inner join medico m on c.medico = m.id
-        inner join hospital h on c.hospital = h.id
-    `)
+  // async getCompras(): Promise<CompraT[]> {
+  //   let algo = await this.comprasRepository.query(
+  //     `SELECT p.nome AS "paciente",
+  //       p.id, c.hora, c.data,
+  //       m.nome AS "medico",
+  //       h.nome AS "hospital"
+  //       from pessoa p 
+  //       inner join CompraT c on p.id = c.pessoa
+  //       inner join medico m on c.medico = m.id
+  //       inner join hospital h on c.hospital = h.id
+  //   `)
 
-    return algo
-  }
+  //   return algo
+  // }
 
 
 
@@ -105,9 +105,8 @@ export class CompraTService {
 
       totalV = parseFloat(totalV.toFixed(2)); // arredonda para 2 casas decimais
 
-      const compraFeita = await this.comprasRepository.query( 
-            `INSERT INTO compraT (total, pagamento) VALUES (${totalV}, '${compraP}') RETURNING id`)// ID da compra feita
-
+      const insertCompraSql = `INSERT INTO compraT (total, pagamento) VALUES ($1, $2) RETURNING id`;
+      const compraFeita = await queryRunner.manager.query(insertCompraSql, [totalV, String(compraP)]);
 
           //para cada item comprado, atualiza a quantidade do produto e insere o itemCompra
       for (let index = 0; index < item.length; index++) {
@@ -123,15 +122,16 @@ export class CompraTService {
 
         quantCompra = parseFloat(quantCompra.toFixed(3)); // arredonda para 2 casas decimais
        
-        //Editando a tabela Produto
-        const algoP = await this.comprasRepository.query
-        (`UPDATE produto SET quant = ${quantCompra} WHERE codigo = '${(element.id)}'`);
+        const updatePruduto = `UPDATE produto SET quant = $1 WHERE codigo = $2`;
+        await queryRunner.manager.query(updatePruduto, [quantCompra, String(element.id)]);
 
-
-        //Inserindo na tabela cada item comprado
-        await this.comprasRepository.query
-        (`INSERT INTO itemCompra (quant, preco, fkproduto, fkcomprat) 
-          VALUES (${element.quantComprada}, ${element.preco}, ${element.id}, ${compraFeita[0].id})`);
+      const insertItemCompra = `INSERT INTO itemCompra (quant, preco, fkproduto, fkcomprat) VALUES ($1, $2, $3, $4)`;
+      await queryRunner.manager.query(insertItemCompra, [
+        element.quantComprada,
+        element.preco,
+        element.id,
+        compraFeita[0].id
+      ]);
             
         }
 

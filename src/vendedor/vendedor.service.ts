@@ -49,32 +49,32 @@ export class VendedorService {
 
 
 
-  async replaceVendedor(id: number, vendedor: Vendedor): Promise < Vendedor > {
-  const existingVendedor = await this.vendedorRepository.findOne({ where: { id } });
+//   async replaceVendedor(id: number, vendedor: Vendedor): Promise < Vendedor > {
+//   const existingVendedor = await this.vendedorRepository.findOne({ where: { id } });
 
-  if(!existingVendedor) {
-    throw new NotFoundException(`Usuário com id ${id} não encontrado`);
-  }
+//   if(!existingVendedor) {
+//     throw new NotFoundException(`Usuário com id ${id} não encontrado`);
+//   }
 
-  // substitui os dados
-    await this.vendedorRepository.update(id, vendedor);
+//   // substitui os dados
+//     await this.vendedorRepository.update(id, vendedor);
 
-  // busca o registro atualizado
-  let algo = await this.vendedorRepository.findOne({ where: { id } });
+//   // busca o registro atualizado
+//   let algo = await this.vendedorRepository.findOne({ where: { id } });
 
-  if (!algo) {
-    throw new NotFoundException(`{não foi possivel achar o dado modificado}`)
-  }
-  return algo
+//   if (!algo) {
+//     throw new NotFoundException(`{não foi possivel achar o dado modificado}`)
+//   }
+//   return algo
 
-}
+// }
 
-  async remove(id: number): Promise<void> {
-    const result = await this.vendedorRepository.delete(id);
-    if (!result) {
-      throw new NotFoundException(`não deu para apagar o usuario com id: ${id}`);
-    }
-  }
+//   async remove(id: number): Promise<void> {
+//     const result = await this.vendedorRepository.delete(id);
+//     if (!result) {
+//       throw new NotFoundException(`não deu para apagar o usuario com id: ${id}`);
+//     }
+//   }
 
 
 }

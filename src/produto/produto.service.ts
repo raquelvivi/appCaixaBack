@@ -25,7 +25,7 @@ export class ProdService {
   async getProd(codigo: string): Promise<Prod> {
    
     const algo = await this.prodRepository.query(
-      `SELECT * FROM Produto WHERE codigo = '${codigo}'`); 
+      `SELECT * FROM Produto WHERE codigo = '$1'`, [codigo]); 
 
     return algo; 
   }

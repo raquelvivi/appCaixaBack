@@ -65,6 +65,13 @@
 <img width="1613" height="792" alt="image" src="https://github.com/user-attachments/assets/5ba09c8d-e58b-40b0-a561-8f1712ea3c3e" />
 
 </br></br>
+
+## Problemas E Aprendizagens 
+
+#### Este projeto foi uma verdadeira oficina para a vida, onde enfrentei diversos desafios e encontrei soluções valiosas. Nele, compreendi a gravidade das vulnerabilidades de SQL Injection e descobri o QueryRunner, percebendo que nem sempre há necessidade de utilizá-lo manualmente no Node.js.
+
+#### Aprendi a evitar inserções maliciosas que poderiam comprometer meu banco de dados e descobri como o NestJS permite garantir a atomicidade das operações, evitando que apenas parte dos dados seja inserida enquanto outra é ignorada. Hoje estou melhor que ontem, e amanhã estarei melhor que hoje. 
+
 <!--
 ## Problemas
 #### Neste projeto, enfrentei um desafio baseado no clássico "na minha máquina funciona". O aplicativo operava perfeitamente no computador e no Expo, mas o cenário mudou na transformação para APK. Durante a execução do APK, a tela dinâmica /pg/[id] não carregava corretamente: ao navegar para ela, o aplicativo exibia a mensagem “Carregando...” indefinidamente.
