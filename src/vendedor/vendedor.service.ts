@@ -18,8 +18,6 @@ export class VendedorService {
 
   // Vendedors: Vendedor[] = [];
 
-  
-
   getVendedors(): Promise<Vendedor[]> {
     return this.vendedorRepository.find(); 
   }

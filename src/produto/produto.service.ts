@@ -15,7 +15,6 @@ export class ProdService {
   ) {}
 
   //Pesquisa de todos os produtos
-
   getProds(): Promise<Prod[]> {
     return this.prodRepository.find();
   }
@@ -30,34 +29,37 @@ export class ProdService {
     return algo; 
   }
 
+  //Pesquisa de produtos com o nome
   async getProdNome(codigo: string): Promise<Prod> {
-
-
-    const result = await this.prodRepository.query(
+    const resultado = await this.prodRepository.query(
       "SELECT * FROM Produto WHERE unaccent(nome) ILIKE unaccent($1)",
       [`%${codigo}%`],
     );
-
-    // if (result.length === 0) {
-      
-    // }
-    return result;
+    return resultado;
   }
-  ///////////////////////////////////////// FALTA FAZER
-  //Pesquisa de produtos com o nome
-  /////////////////////////////////////////
+
 
   //Cadastro de produtos
-
   async addProd(prod: Prod): Promise<Prod> {
-    let algo = await this.prodRepository.save(prod);
+    let resultado;
+    try {
+      resultado = await this.prodRepository.create(prod);
+      return await this.prodRepository.save(resultado);
 
-    if (!algo) {
-      // Se tiver algum erro apareça mensagem de erro
+    } catch (error) {
+
+      console.error('Erro ao cadastrar produto:', error);
       throw new NotFoundException(`{não foi possivel cadastrar}`);
+
+    }finally {
+      
+      return resultado;
     }
-    return algo;
+
   }
+
+  
+
 
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa modifica e deleta pelo nome
