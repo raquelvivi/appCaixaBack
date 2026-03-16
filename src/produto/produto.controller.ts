@@ -16,6 +16,17 @@ export class ProdController {
     return this.ProdService.getProds();
   }
 
+  @Get('validade/')
+  getProdValidade(): Promise<Prod[]> {
+    return this.ProdService.getProdValidade();
+  }
+
+  @Get('repo/')
+  getProdRepo(): Promise<Prod[]> {
+    return this.ProdService.getProdRepo();
+  }
+
+  //Pesquisa de produtos com o nome
 
   @Get('label/:codigo')
   getProdNome(@Param('codigo') codigo: string): Promise<Prod> {
@@ -28,12 +39,6 @@ export class ProdController {
   getProd(@Param('codigo') codigo: string): Promise<Prod> {
     return this.ProdService.getProd(codigo);
   }
-
-  
-
-  ///////////////////////////////////////// FALTA FAZER
-  //Pesquisa de produtos com o nome
-  /////////////////////////////////////////
 
   //Cadastro de produtos
   @Post()
