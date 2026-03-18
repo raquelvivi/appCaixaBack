@@ -9,7 +9,7 @@ export class Prod {
   nome: string;
 
   @Column({ type: 'date' })
-  validade: Date;
+  validade: Date | null ;
 
   @Column()
   quant: number;

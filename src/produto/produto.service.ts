@@ -20,58 +20,50 @@ export class ProdService {
     return this.prodRepository.find();
   }
 
-
   //Pesquisa de produtos com o codigo de barras
   async getProd(codigo: string): Promise<Prod> {
-   
-    const algo = await this.prodRepository.query(
-      `SELECT * FROM Produto WHERE codigo = $1`, [codigo]); 
+    const algo = await this.prodRepository.query(`SELECT * FROM Produto WHERE codigo = $1`, [codigo]);
 
-    return algo; 
+    return algo;
   }
 
   //Pesquisa de produtos com o nome
   async getProdNome(codigo: string): Promise<Prod> {
-    const resultado = await this.prodRepository.query(
-      "SELECT * FROM Produto WHERE unaccent(nome) ILIKE unaccent($1)",
-      [`%${codigo}%`],
-    );
+    const resultado = await this.prodRepository.query('SELECT * FROM Produto WHERE unaccent(nome) ILIKE unaccent($1)', [
+      `%${codigo}%`,
+    ]);
     return resultado;
   }
 
   async getProdValidade(): Promise<Prod[]> {
+    let data = new Date();
+    data.setDate(data.getDate() + 7); // Adiciona 7 dias à data atual
+    console.log(data);
 
-        let data = new Date();
-        data.setDate(data.getDate() + 7); // Adiciona 7 dias à data atual
-        console.log(data);
+    const GetValidade = await this.prodRepository.find({
+      where: {
+        validade: LessThan(data),
+      },
+      order: {
+        validade: 'ASC',
+      },
+    });
 
-        const GetValidade = await this.prodRepository.find({
-          where: {
-            validade: LessThan(data)
-          },
-          order:{
-            validade: "ASC"
-          }
-        });
-  
-         return GetValidade
+    return GetValidade;
+  }
+
+  async getProdRepo(): Promise<Prod[]> {
+    try {
+      const algo = await this.prodRepository
+        .createQueryBuilder('produto') // "produto" é o apelido da tabela
+        .where('produto.quant <= produto.quantminimo') // Comparação direta entre colunas
+        .getMany();
+
+      return algo;
+    } catch (error) {
+      throw new InternalServerErrorException(`Erro ao buscar produtos com estoque baixo.`);
     }
-
-    async getProdRepo(): Promise<Prod[]> {
-      
-      try {
-        const algo = await this.prodRepository
-          .createQueryBuilder("produto") // "produto" é o apelido da tabela
-          .where("produto.quant <= produto.quantminimo") // Comparação direta entre colunas
-          .getMany();
-
-        return algo;
-      } catch (error) {
-        throw new InternalServerErrorException(`Erro ao buscar produtos com estoque baixo.`);
-      }
-    }
-  
-
+  }
 
   //Cadastro de produtos
   async addProd(prod: Prod): Promise<Prod> {
@@ -79,45 +71,25 @@ export class ProdService {
     try {
       resultado = await this.prodRepository.create(prod);
       return await this.prodRepository.save(resultado);
-
-
     } catch (error) {
-
       console.error('Erro ao cadastrar produto:', error);
       throw new NotFoundException(`{não foi possivel cadastrar}`);
-
     }
-
   }
 
-  
+  //Editar a base do codigo de barras
+  async replaceVali(codigo: string): Promise<boolean> {
+    const result = await this.prodRepository.update(
+    { codigo: codigo },
+    { validade: null, quant: 0 }
+  );
 
+  return result.affected !== 0;
+  }
 
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa modifica e deleta pelo nome
   /////////////////////////////////////////
-
-  //Editar a base do codigo de barras
-  async replaceProd(codigo: string, prod: Prod): Promise<Prod> {
-    //findOne busca apenas um para não dar problema. como modificar o banco inteiro
-
-    const existingProd = await this.prodRepository.findOne({ where: { codigo } });
-
-    if (!existingProd) {
-      throw new NotFoundException(`Usuário com codigo ${codigo} não encontrado`);
-    }
-
-    // substitui os dados
-    await this.prodRepository.update(codigo, prod);
-
-    // busca o registro atualizado
-    let algo = await this.prodRepository.findOne({ where: { codigo } });
-
-    if (!algo) {
-      throw new NotFoundException(`{não foi possivel achar o dado modificado}`);
-    }
-    return algo;
-  }
 
   //Deletar
   async remove(codigo: string): Promise<void> {

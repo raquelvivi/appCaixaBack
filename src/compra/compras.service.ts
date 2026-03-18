@@ -87,35 +87,24 @@ export class CompraTService {
     await queryRunner.connect(); // conecta ao banco
 
     await queryRunner.startTransaction(); // BEGIN, inicio da transação
-      
-
     try{ 
 
       let totalV = 0;
-
       //calculo do valor total da compra
       for (let index = 0; index < item.length; index++) {
-
         const element = item[index];
-
         totalV = totalV + (element.quantComprada * element.preco);
-
       }
 
-
       totalV = parseFloat(totalV.toFixed(2)); // arredonda para 2 casas decimais
-
       const insertCompraSql = `INSERT INTO compraT (total, pagamento) VALUES ($1, $2) RETURNING id`;
-      const compraFeita = await queryRunner.manager.query(insertCompraSql, [totalV, String(compraP)]);
+      const compraFeita = await queryRunner.manager.query(insertCompraSql, [totalV, String(compraP || 'Dinheiro')]); // insere a compra e retorna o ID da compra feita
 
           //para cada item comprado, atualiza a quantidade do produto e insere o itemCompra
       for (let index = 0; index < item.length; index++) {
         
         const element = item[index];
-
-
         let quantCompra = element.quantAntesCompra - element.quantComprada;
-
         if (quantCompra < 0) { // para não ter produtos com quantidade negativa
           quantCompra = 0;
         }
@@ -131,14 +120,10 @@ export class CompraTService {
         element.preco,
         element.id,
         compraFeita[0].id
-      ]);
-            
+      ]);  
         }
-
        await queryRunner.commitTransaction(); // COMMIT
-
        return compraFeita[0].id; // retorna o ID da compra feita para o front
-
     }catch(error){
       await queryRunner.rollbackTransaction(); // ROLLBACK, desfaz as operações feitas no banco
       throw error;

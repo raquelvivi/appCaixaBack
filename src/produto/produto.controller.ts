@@ -46,15 +46,16 @@ export class ProdController {
     return this.ProdService.addProd(Prod);
   }
 
-  ///////////////////////////////////////// FALTA FAZER
-  //Pesquisa modifica e deleta pelo nome
-  /////////////////////////////////////////
-
-  //Editar a base do codigo de barras
+  //Editar validade do produto
   @Put(':codigo')
-  replaceProd(@Param('codigo') codigo: string, @Body() newData: Prod): Promise<Prod> {
-    return this.ProdService.replaceProd(codigo, newData);
+  replaceVali(@Param('codigo') codigo: string): Promise<boolean> {
+    return this.ProdService.replaceVali(codigo);
   }
+
+
+    ///////////////////////////////////////// FALTA FAZER
+    //Pesquisa modifica e deleta pelo nome
+    /////////////////////////////////////////
 
   //Deletar
   @Delete(':codigo')
