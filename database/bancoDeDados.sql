@@ -88,11 +88,10 @@ create table despesas (
 	valor double precision not null,
 	data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	nome varchar (50) null,
-    fkAquisicao integer,
+    fkAquisicao integer null, -- possibilidade de colocar outras coisas como despesas, como pagamento de funcionario
 	FOREIGN (fkAquisicao) REFERENCES aquisicao(id)
-
+	-- poderia colocar uma coluna sobre repetição, se é uma despesa regular como pagamento de funcionarios mensalmente
 );
-
 
 create table CompraT (
 

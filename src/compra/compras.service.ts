@@ -6,18 +6,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CompraT, ItemCompra } from './compras.entity';
 
-
-
-
-
-// export type CompraT = {
-//   id: number;
-//   name: string;
-//   age: number;
-//   uf: string;
-// }
-
-
 @Injectable()
 export class CompraTService {
 
@@ -26,26 +14,6 @@ export class CompraTService {
     private comprasRepository: Repository<CompraT>,
     private dataSource: DataSource // substituto do pool
   ) { }
-
-  // CompraTs: CompraT[] = [];
-
-
-
-  // async getCompras(): Promise<CompraT[]> {
-  //   let algo = await this.comprasRepository.query(
-  //     `SELECT p.nome AS "paciente",
-  //       p.id, c.hora, c.data,
-  //       m.nome AS "medico",
-  //       h.nome AS "hospital"
-  //       from pessoa p 
-  //       inner join CompraT c on p.id = c.pessoa
-  //       inner join medico m on c.medico = m.id
-  //       inner join hospital h on c.hospital = h.id
-  //   `)
-
-  //   return algo
-  // }
-
 
 
   async getCompraT(id: number): Promise<CompraT> {
@@ -57,27 +25,6 @@ export class CompraTService {
     }
     return algo
   }
-
-  // async getCompraT(id: number) {
-
-  //   let algo = await this.comprasRepository.query(
-  //     `SELECT p.nome AS "paciente",
-  //       p.id, c.hora, c.data,
-  //       m.nome AS "medico",
-  //       h.nome AS "hospital"
-  //       from pessoa p 
-  //       inner join CompraT c on p.id = c.pessoa
-  //       inner join medico m on c.medico = m.id
-  //       inner join hospital h on c.hospital = h.id
-  //       WHERE p.id = $1
-  //   `, [id])
-
-  //   if (!algo) {
-  //     throw new NotFoundException(`{o id com o numero ${id} não foi achado}`)
-  //   }
-  //   return algo
-  // }
-
 
 //  Cadastro de Compras
   async addCompraT(compraP: string, item: ItemCompra[]): Promise<{ item: ItemCompra }> {

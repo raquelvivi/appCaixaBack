@@ -71,6 +71,7 @@ export class ProdService {
     try {
       resultado = await this.prodRepository.create(prod);
       return await this.prodRepository.save(resultado);
+      
     } catch (error) {
       console.error('Erro ao cadastrar produto:', error);
       throw new NotFoundException(`{não foi possivel cadastrar}`);
