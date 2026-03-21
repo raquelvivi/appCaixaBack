@@ -3,6 +3,9 @@
 import { Injectable, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, DataSource, LessThanOrEqual, LessThan } from 'typeorm';
+import { Tem } from '../tem/tem.entity';
+import { Despesas } from '../despesa/despesa.entity';
+import { Aquisicao } from '../aquisicao/aquisicao.entity';
 
 //Importando pacotes Locais feitos a mão
 import { Prod } from './produto.entity';
@@ -13,6 +16,7 @@ export class ProdService {
     @InjectRepository(Prod)
     private prodRepository: Repository<Prod>,
     private dataSource: DataSource,
+
   ) {}
 
   //Pesquisa de todos os produtos
@@ -66,26 +70,54 @@ export class ProdService {
   }
 
   //Cadastro de produtos
-  async addProd(prod: Prod): Promise<Prod> {
+  async addProd(prod: Prod, vendedor: number): Promise<Prod> {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); //conexao aberta
+
     let resultado;
     try {
-      resultado = await this.prodRepository.create(prod);
-      return await this.prodRepository.save(resultado);
-      
-    } catch (error) {
-      console.error('Erro ao cadastrar produto:', error);
-      throw new NotFoundException(`{não foi possivel cadastrar}`);
+      // Salvar o produto
+      resultado = await queryRunner.manager.save(Prod, prod);
+
+      // Salvar o tem, relacionamento de produto com vendedor
+      const resutTem = await queryRunner.manager.save(Tem, {
+        valor: prod.precocompra,
+        fkproduto: prod.codigo,
+        fkvendedor: vendedor,
+      });
+
+      // Salvar a aquisição
+      const aquisicao = await queryRunner.manager.save(Aquisicao, {
+        quant: prod.quant,
+        total: prod.precocompra * prod.quant,
+        nome: 'compra de mercadoria',
+        fktem: resutTem.id,
+      });
+
+      // Salvar a despesa
+      await queryRunner.manager.save(Despesas, {
+        valor: prod.precocompra * prod.quant,
+        nome: 'compra de mercadoria',
+        fkaquisicao: aquisicao.id,
+      });
+
+      await queryRunner.commitTransaction(); //conexao fechada
+      return resultado;
+    } catch (err) {
+      await queryRunner.rollbackTransaction(); //deu merda, desfaz tudo
+      throw err;
+    } finally {
+      await queryRunner.release();
     }
   }
 
   //Editar a base do codigo de barras
   async replaceVali(codigo: string): Promise<boolean> {
-    const result = await this.prodRepository.update(
-    { codigo: codigo },
-    { validade: null, quant: 0 }
-  );
+    const result = await this.prodRepository.update({ codigo: codigo }, { validade: null, quant: 0 });
 
-  return result.affected !== 0;
+    return result.affected !== 0;
   }
 
   ///////////////////////////////////////// FALTA FAZER

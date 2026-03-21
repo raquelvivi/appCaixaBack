@@ -20,6 +20,19 @@ export class TemService {
     return this.temRepository.find();
   }
 
-  //fazer put e delete
 
+
+  async getTemRelacao(codigo: string): Promise<Tem[]> {
+      const resultado = await this.temRepository.query(`  
+        SELECT p.nome, p.codigo, 
+        tem.valor AS "Preco",
+        v.nome AS "vendedor",
+        tem.id AS "id-Vendedor"
+        FROM produto p
+        INNER JOIN tem ON tem.fkproduto = p.codigo
+        INNER JOIN vendedor v ON v.id = tem.fkvendedor
+        WHERE p.codigo = $1;`, 
+        [codigo]);
+      return resultado;
+    }
 }

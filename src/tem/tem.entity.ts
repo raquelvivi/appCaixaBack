@@ -9,9 +9,9 @@ export class Tem {
   valor: number;
 
   @Column()
-  fkProduto: string;
+  fkproduto: string;
 
   @Column()
-  fkVendedor: string;
+  fkvendedor: number;
 
 }

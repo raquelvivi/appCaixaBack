@@ -42,8 +42,8 @@ export class ProdController {
 
   //Cadastro de produtos
   @Post()
-  addProd(@Body() Prod: Prod): Promise<Prod> {
-    return this.ProdService.addProd(Prod);
+  addProd(@Body() Prod: Prod, @Body('vendedor') vendedor: number): Promise<Prod> {
+    return this.ProdService.addProd(Prod, vendedor);
   }
 
   //Editar validade do produto

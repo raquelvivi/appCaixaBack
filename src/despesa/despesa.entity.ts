@@ -5,19 +5,19 @@ export class Despesas {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'varchar', length: 10, nullable: true })
   pagou: string | null;
 
   @Column()
   valor: number;
 
-  @Column({ type: 'date' })
-  data: Date | null ;
+  @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP'})
+  data: Date | null;
 
   @Column()
   nome: string;
 
   @Column()
-  fkAquisicao: number;
+  fkaquisicao: number;
 
 }

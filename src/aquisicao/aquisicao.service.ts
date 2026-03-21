@@ -13,6 +13,7 @@ export class AquisicaoService {
     @InjectRepository(Aquisicao)
     private aquisicaoRepository: Repository<Aquisicao>,
     private dataSource: DataSource,
+    
   ) {}
 
   //Pesquisa de todos os Aquisicao

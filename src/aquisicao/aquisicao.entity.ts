@@ -18,6 +18,6 @@ export class Aquisicao {
   data: Date | null;
 
   @Column()
-  fkTem: number;
+  fktem: number;
 
 }

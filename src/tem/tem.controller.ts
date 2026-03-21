@@ -16,5 +16,11 @@ export class TemController {
     return this.TemService.getTem();
   }
 
+  @Get('/:codigo')
+  getTemRelacao(@Param('codigo') codigo: string): Promise<Tem[]> {
+    return this.TemService.getTemRelacao(codigo);
+  }
+
+
   //fazer put e delete
 }
