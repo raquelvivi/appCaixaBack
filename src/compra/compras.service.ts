@@ -6,6 +6,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CompraT, ItemCompra } from './compras.entity';
 
+//Pesquisa de total de vendas por dia
+
+// SELECT SUM(total) AS soma_total
+// FROM compraT
+// WHERE "data" >= '2026-02-01'
+//   AND "data" <  '2026-03-01';
+  
+
+//Pesquisa de total de vendas por hora
+
+
+
 @Injectable()
 export class CompraTService {
 
@@ -16,10 +28,24 @@ export class CompraTService {
   ) { }
 
 
+  async getTotalVendas (dataInicio: Date, dataFim: Date): Promise<number> {
+    const resultado = await this.comprasRepository.query
+    (`SELECT SUM(total) AS soma_total
+      FROM compraT
+      WHERE "data" >= $1
+      AND "data" <  $2`, [
+      [dataInicio], [dataFim]
+    ]);
+
+    if (!resultado || resultado.length === 0) {
+    return 0;
+  }
+    return resultado[0].soma_total ?? 0;
+  }
+
+
   async getCompraT(id: number): Promise<CompraT> {
-
     let algo = await this.comprasRepository.findOneBy({ id });
-
     if (!algo) {
       throw new NotFoundException(`{o id com o numero ${id} não foi achado}`)
     }

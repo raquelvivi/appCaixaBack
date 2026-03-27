@@ -27,7 +27,7 @@ export class TemService {
         SELECT p.nome, p.codigo, 
         tem.valor AS "Preco",
         v.nome AS "vendedor",
-        tem.id AS "id-Vendedor"
+        tem.id AS "idVendedor"
         FROM produto p
         INNER JOIN tem ON tem.fkproduto = p.codigo
         INNER JOIN vendedor v ON v.id = tem.fkvendedor
