@@ -68,26 +68,25 @@
 <img width="1845" height="925" alt="image" src="https://github.com/user-attachments/assets/d2e76460-d6af-4fb7-8fed-d177fbfdddc9" />
 <img width="1847" height="872" alt="image" src="https://github.com/user-attachments/assets/ef76ab51-41a4-455c-ab57-524e4c948cf2" />
 <img width="1613" height="792" alt="image" src="https://github.com/user-attachments/assets/5ba09c8d-e58b-40b0-a561-8f1712ea3c3e" />
+<img width="1500" height="724" alt="Captura de tela 2026-04-06 225243" src="https://github.com/user-attachments/assets/e7765ddf-94b7-4e42-9e56-2dce950d9496" />
+<img width="304" height="800" alt="Captura de tela 2026-04-06 225018" src="https://github.com/user-attachments/assets/03509e57-538f-485e-b302-ede165673bab" />
+<img width="630" height="801" alt="Captura de tela 2026-04-06 230910" src="https://github.com/user-attachments/assets/18947489-f0ff-4388-9a15-5e975aef7b00" />
+
+
 
 </br></br>
 
 ## Problemas E Aprendizagens 
 
+### Segurança
+
 #### Este projeto foi uma verdadeira oficina para a vida, onde enfrentei diversos desafios e encontrei soluções valiosas. Nele, compreendi a gravidade das vulnerabilidades de SQL Injection e descobri o QueryRunner, percebendo que nem sempre há necessidade de utilizá-lo manualmente no Node.js.
 
-#### Aprendi a evitar inserções maliciosas que poderiam comprometer meu banco de dados e descobri como o NestJS permite garantir a atomicidade das operações, evitando que apenas parte dos dados seja inserida enquanto outra é ignorada. Hoje estou melhor que ontem, e amanhã estarei melhor que hoje. 
+### Organização
+
+#### Um dos maiores desafios deste projeto foi lidar com a complexidade crescente do código, especialmente em relação à organização, escalabilidade e performance. Ao longo do desenvolvimento, precisei estruturar rotas extensas e consultas com grande volume de dados, o que exigiu a aplicação prática de boas práticas de arquitetura e refatoração. Busquei constantemente aplicar princípios de código limpo, inspirados no livro Clean Code, além de dividir responsabilidades e reduzir a complexidade de funções críticas. Este projeto evidencia claramente minha evolução como desenvolvedora: de uma abordagem inicial mais exploratória para uma construção mais madura, consciente e orientada a boas práticas.
 
 <!--
-## Problemas
-#### Neste projeto, enfrentei um desafio baseado no clássico "na minha máquina funciona". O aplicativo operava perfeitamente no computador e no Expo, mas o cenário mudou na transformação para APK. Durante a execução do APK, a tela dinâmica /pg/[id] não carregava corretamente: ao navegar para ela, o aplicativo exibia a mensagem “Carregando...” indefinidamente.
-
-#### O erro não estava relacionado à navegação ou ao parâmetro id, mas sim às requisições HTTP feitas para o backend hospedado na Render. Enquanto no ambiente de teste tudo fluía, no ambiente real a história era outra. O próprio Android bloqueava a requisição HTTP, o que, consequentemente, impedia a resposta e o carregamento da tela. A solução foi rápida: substituir o HTTP por sua versão segura e criptografada, o HTTPS.
-
-#### Com isso, aprendi que ambientes de desenvolvimento são mais permissivos e aceitam HTTP, enquanto em produção as restrições são maiores. Este episódio serve como um lembrete para mim mesma: mesmo tendo estudado protocolos como HTTP, HTTPS, UDP e TCP, acabei caindo na cilada de utilizar uma conexão não segura em um ambiente restrito.
-
-
-</br></br>
-
 
 ## Futuro
 #### Para o futuro, planejo criar uma página com informações como: quantidade de compras, quantidade de pagamentos, número de fichas, valor total de dinheiro preso, entre outros dados relevantes. Além disso, pretendo incorporar ao aplicativo Fixas Caloteiro um gerenciador de estoque e preços para o mesmo mercado.
