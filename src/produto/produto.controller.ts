@@ -26,12 +26,19 @@ export class ProdController {
     return this.ProdService.getProdRepo();
   }
 
-  //Pesquisa de produtos com o nome
+  //Pesquisa de produtos e vendedores com o nome
 
   @Get('label/:codigo')
   getProdNome(@Param('codigo') codigo: string): Promise<Prod> {
     return this.ProdService.getProdNome(codigo);
   }
+
+  // @Get('label/:codigo')
+  // getProdCodigoVendedor(@Param('codigo') codigo: string): Promise<Prod> {
+  //   return this.ProdService.getProdCodigoVendedor(codigo);
+  // }
+
+  
 
   //Pesquisa de produtos com o codigo de barras
 

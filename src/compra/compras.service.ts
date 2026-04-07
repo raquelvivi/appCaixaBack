@@ -6,16 +6,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CompraT, ItemCompra } from './compras.entity';
 
-//Pesquisa de total de vendas por dia
-
-// SELECT SUM(total) AS soma_total
-// FROM compraT
-// WHERE "data" >= '2026-02-01'
-//   AND "data" <  '2026-03-01';
-  
-
-//Pesquisa de total de vendas por hora
-
+import { DespesasService } from '../despesa/despesa.service';
+import { ProdService } from '../produto/produto.service';
 
 
 @Injectable()
@@ -24,7 +16,10 @@ export class CompraTService {
   constructor(
     @InjectRepository(CompraT)
     private comprasRepository: Repository<CompraT>,
-    private dataSource: DataSource // substituto do pool
+    private dataSource: DataSource, // substituto do pool
+
+    private readonly despesasService: DespesasService,
+    private readonly prodService: ProdService
   ) { }
 
 
@@ -42,7 +37,6 @@ export class CompraTService {
   }
     return resultado[0].soma_total ?? 0;
   }
-
 
   async getCompraT(id: number): Promise<CompraT> {
     let algo = await this.comprasRepository.findOneBy({ id });

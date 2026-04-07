@@ -33,6 +33,35 @@ export class DespesasService {
     }
   }
 
+
+  //Total de despesas do Mes
+    async getTotalDespesasMes(): Promise<number> {
+  
+      const ValorDespesasMes = await this.despesasRepository.query
+      (`SELECT CAST(SUM(valor) AS DECIMAL(10,2)) AS soma_total FROM despesas
+        WHERE DATE_TRUNC('month', data) = DATE_TRUNC('month', CURRENT_DATE);`);
+  
+      if (!ValorDespesasMes || ValorDespesasMes.length === 0) {
+      return 0;
+    }
+      return ValorDespesasMes[0].soma_total ?? 0;
+    }
+  
+   //Total de despesas do Hoje
+    async getTotalDespesasHoje(): Promise<number> {
+  
+      const ValorDespesasHoje = await this.despesasRepository.query
+      (`SELECT CAST(SUM(valor) AS DECIMAL(10,2)) AS soma_total FROM despesas
+        WHERE DATE(data) = CURRENT_DATE;`);
+  
+      if (!ValorDespesasHoje || ValorDespesasHoje.length === 0) {
+        return 0;
+     }
+      return ValorDespesasHoje[0].soma_total ?? 0
+    }
+
+
+
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa modifica e deleta pelo nome
   /////////////////////////////////////////

@@ -57,6 +57,11 @@
    npm run start:dev
    ```
 
+   <!-- 
+   front vue = npm run serve
+   back nest = npm run start:dev   
+   -->
+
 <br/><br/>
 ## 🖼️ Imagens
 

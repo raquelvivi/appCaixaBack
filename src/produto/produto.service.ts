@@ -69,6 +69,17 @@ export class ProdService {
     }
   }
 
+  //Total de despesas do Mes
+    async getProdutosEValorMonetario(): Promise<[number, number]> {
+  
+      const ValorProdutosEQuantProdutos = await this.prodRepository.query
+      (`SELECT CAST(SUM(quant) AS DECIMAL(10,2)) AS QuantidadeProdutos, 
+        CAST(SUM(quant * precocompra) AS DECIMAL(10,2)) AS ValorDoEstoque FROM produto`);
+  
+      return [ValorProdutosEQuantProdutos[0].quantidadeprodutos ?? 0, ValorProdutosEQuantProdutos[0].valordoestoque ?? 0];
+    }
+
+
   //Cadastro de produtos
   async addProd(prod: Prod, vendedor: number): Promise<Prod> {
     const queryRunner = this.dataSource.createQueryRunner();
@@ -88,6 +99,7 @@ export class ProdService {
         fkvendedor: vendedor,
       });
 
+      
       // Salvar a aquisição
       const aquisicao = await queryRunner.manager.save(Aquisicao, {
         quant: prod.quant,
