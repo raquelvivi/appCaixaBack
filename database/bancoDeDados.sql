@@ -76,7 +76,7 @@ create table aquisicao (
 	data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	nome varchar (50) null,
 	fkTem integer,
-	chegou boolean, -- adicionar coluna no bd
+	chegou boolean, 
 	FOREIGN (fkTem) REFERENCES Tem (id)
 
 );

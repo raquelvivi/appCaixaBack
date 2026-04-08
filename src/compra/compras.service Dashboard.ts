@@ -54,7 +54,7 @@ export class CompraTServiceDashboard {
         soma_total_mes: ValorCompraTotalMes,
         despesas_hoje: ValorDespesasHoje,
         despesas_mes: ValorDespesasMes,
-        Lucro_mes: ValorCompraTotalMes - ValorDespesasMes, // Lucro do mês
+        Lucro_mes: Math.round((ValorCompraTotalMes - ValorDespesasMes) * 100) / 100 // Lucro do mês
       },
       Estoque:{
         Quantidade_produtos_No_Estoque: QuantidadeProdutos,
@@ -102,7 +102,7 @@ export class CompraTServiceDashboard {
   //Vendas dos ultimos 7 dias
   async getSevenDays(): Promise<[]> {
 
-    const UltimosSevenDays = await this.comprasRepository.query
+    let ultimosSevenDays = await this.comprasRepository.query
     (`SELECT 
         d::date AS dia,
         COALESCE(SUM(c.total), 0) AS total
@@ -115,10 +115,16 @@ export class CompraTServiceDashboard {
       GROUP BY d
       ORDER BY d;`);
 
-    if (!UltimosSevenDays || UltimosSevenDays.length === 0) {
+    if (!ultimosSevenDays || ultimosSevenDays.length === 0) {
     return [];
   }
-    return UltimosSevenDays ?? 0;
+
+  const formatador = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' });
+
+  return ultimosSevenDays.map(item => ({
+    ...item,
+    dia_formatado: formatador.format(new Date(item.dia)).replace('-feira', '')
+  }));
   }
 
 
@@ -126,14 +132,16 @@ export class CompraTServiceDashboard {
    async getProdutosMaisVendidos(): Promise<[]> {
 
     const MaisVendidos = await this.comprasRepository.query
-    (`SELECT p.nome, SUM(i.quant) AS total_vendido, (i.preco * SUM(i.quant)) AS "ValorTotalVendido"
+    (`SELECT p.nome, CAST(SUM(i.quant) AS DECIMAL(10,2)) AS total_vendido, 
+      CAST((i.preco * SUM(i.quant)) AS DECIMAL(10,2)) AS "ValorTotalVendido"
       FROM ItemCompra i
       JOIN Produto p ON p.codigo = i.fkProduto
       JOIN CompraT c ON c.id = i.fkCompraT
       WHERE DATE_TRUNC('month', c.data) = DATE_TRUNC('month', CURRENT_DATE)
       GROUP BY p.nome, i.preco
       ORDER BY total_vendido DESC
-      LIMIT 5;`);
+      LIMIT 5;
+`);
 
     if (!MaisVendidos || MaisVendidos.length === 0) {
     return [];
@@ -179,7 +187,7 @@ export class CompraTServiceDashboard {
       WHERE p.quant > 0
       GROUP BY p.codigo, p.nome, p.quant
       ORDER BY total_vendido ASC 
-      LIMIT 10;
+      LIMIT 5;
       `);
 
     if (!MaisParados || MaisParados.length === 0) {

@@ -42,7 +42,6 @@ export class ProdService {
   async getProdValidade(): Promise<Prod[]> {
     let data = new Date();
     data.setDate(data.getDate() + 7); // Adiciona 7 dias à data atual
-    console.log(data);
 
     const GetValidade = await this.prodRepository.find({
       where: {
