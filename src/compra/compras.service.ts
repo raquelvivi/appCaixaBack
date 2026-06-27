@@ -38,6 +38,17 @@ export class CompraTService {
     return resultado[0].soma_total ?? 0;
   }
 
+  async getVendas (): Promise<CompraT[]> {
+    const resultado = await this.comprasRepository.query
+    (`SELECT * FROM compraT
+      limit 10`);
+
+    if (!resultado || resultado.length === 0) {
+    return [];
+  }
+    return resultado;
+  }
+
   async getCompraT(id: number): Promise<CompraT> {
     let algo = await this.comprasRepository.findOneBy({ id });
     if (!algo) {

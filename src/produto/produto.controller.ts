@@ -59,6 +59,12 @@ export class ProdController {
     return this.ProdService.replaceVali(codigo);
   }
 
+   //Editar produto
+  @Put('product/:codigo')
+  replaceProd(@Param('codigo') codigo: string,@Body() Prod: Prod): Promise<boolean> {
+    return this.ProdService.replaceProd(codigo, Prod);
+  }
+
 
     ///////////////////////////////////////// FALTA FAZER
     //Pesquisa modifica e deleta pelo nome

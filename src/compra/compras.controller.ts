@@ -1,5 +1,5 @@
 
-import { Controller, Get, Post, Body, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param } from '@nestjs/common';
 import { CompraTService } from './compras.service';
 import { CompraTServiceDashboard } from './compras.service Dashboard';
 import { CompraT, ItemCompra } from './compras.entity';
@@ -20,9 +20,20 @@ export class CompraTController {
     return this.compraService.getTotalVendas(new Date(dataInicio), new Date(dataFim));
   }
 
+  @Get(':id')
+    getCompraT(@Param("id") id: number): Promise<CompraT>{
+    return this.compraService.getCompraT(id);
+  }
+  
+
   @Get('/dashboard')
   getDashboard(): Promise<any>{
     return this.compraServiceDash.getDashboard();
+  }
+
+  @Get('ultimas-vendas')
+  getVendas(): Promise<CompraT[]> {
+    return this.compraService.getVendas();
   }
 
   @Post()

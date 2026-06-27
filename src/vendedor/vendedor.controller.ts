@@ -13,12 +13,16 @@ export class VendedorController {
     return this.vendedorService.getVendedors();
   }
 
+  @Get('nome/:nome')
+  getVendedorsNome(@Param('nome') nome: string): Promise<Vendedor[]> {
+    return this.vendedorService.getVendedorNome(nome);
+  }
 
-  // @Get(':id')
-  // getVendedor(@Param('id') id: number): Promise<Vendedor> {
+  @Get(':id')
+  getVendedor(@Param('id') id: number): Promise<Vendedor> {
     
-  //   return this.vendedorService.getVendedor(id);
-  // }
+    return this.vendedorService.getVendedor(id);
+  }
 
 
   @Post()
@@ -28,16 +32,16 @@ export class VendedorController {
 
 
 
-  // @Put(":id")
-  // replaceVendedor(@Param("id") id: number, @Body() newData: Vendedor): Promise<Vendedor> {
-  //   return this.vendedorService.replaceVendedor(id, newData);
-  // }
+  @Put(":id")
+  replaceVendedor(@Param("id") id: number, @Body() newData: Vendedor): Promise<Vendedor> {
+    return this.vendedorService.replaceVendedor(id, newData);
+  }
 
 
-  // @Delete(':id')
-  // removeVendedor(@Param('id') id: number): Promise<void> {
-  //   return this.vendedorService.remove(id);
-  // }
+  @Delete(':id')
+  removeVendedor(@Param('id') id: string): Promise<void> {
+    return this.vendedorService.remove(id);
+  }
 
 
 }

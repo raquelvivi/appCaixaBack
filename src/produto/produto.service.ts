@@ -131,6 +131,11 @@ export class ProdService {
     return result.affected !== 0;
   }
 
+  async replaceProd(codigo: string, prod: Prod): Promise<boolean> {
+    const result = await this.prodRepository.update({ codigo: codigo }, prod);
+
+    return result.affected !== 0;
+  }
   ///////////////////////////////////////// FALTA FAZER
   //Pesquisa modifica e deleta pelo nome
   /////////////////////////////////////////
