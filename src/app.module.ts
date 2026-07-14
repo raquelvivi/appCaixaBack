@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ProdModule } from './produto/produto.module';
 import { VendedorModule } from './vendedor/vendedor.module';
 import { CompraTModule } from './compra/compras.module';
-import { AquisicaoModule } from './aquisicao/aquisicao.module';
 import { DespesasModule } from './despesa/despesa.module';
 // import { DespesasModule } from './despesa/despesa.module';
 import { TemModule } from './tem/tem.module';
@@ -25,7 +24,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     ProdModule,
     VendedorModule,
     CompraTModule,
-    AquisicaoModule,
     DespesasModule,
     TemModule,
   ],

@@ -3,15 +3,15 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('tem') // tabela já criada
 export class Tem {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  valor: number;
+  valor!: number;
 
   @Column()
-  fkproduto: string;
+  fkproduto!: string;
 
   @Column()
-  fkvendedor: number;
+  fkvendedor!: number;
 
 }

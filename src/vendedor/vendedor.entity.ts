@@ -3,26 +3,26 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 @Entity('vendedor') // tabela já criada
 export class Vendedor {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column()
-  nome: string;
+  nome!: string;
 
   @Column()
-  site: string;
+  site!: string;
 
   @Column()
-  cnpj: string;
+  cnpj!: string;
 
   @Column()
-  contato: string;
+  contato!: string;
 
   @Column()
-  vindames: number;
+  vindames!: number;
 
   @Column({ type: 'date' })
-  criado_em: Date;
+  criado_em!: Date;
 
   @Column({ type: 'date' })
-  atualizado_em: Date;
+  atualizado_em!: Date;
 }

@@ -20,15 +20,9 @@ export class CompraTController {
     return this.compraService.getTotalVendas(new Date(dataInicio), new Date(dataFim));
   }
 
-  @Get(':id')
-    getCompraT(@Param("id") id: number): Promise<CompraT>{
-    return this.compraService.getCompraT(id);
-  }
-  
-
-  @Get('/dashboard')
-  getDashboard(): Promise<any>{
-    return this.compraServiceDash.getDashboard();
+  @Post()
+    addCompraT(@Body('compra') compra: string, @Body('item') item: ItemCompra[]): Promise<{ item: ItemCompra }> {
+    return this.compraService.addCompraT(compra, item);
   }
 
   @Get('ultimas-vendas')
@@ -36,11 +30,16 @@ export class CompraTController {
     return this.compraService.getVendas();
   }
 
-  @Post()
-    addCompraT(@Body('compra') compra: string, @Body('item') item: ItemCompra[]): Promise<{ item: ItemCompra }> {
-    return this.compraService.addCompraT(compra, item);
+  @Get('/dashboard')
+  getDashboard(): Promise<any>{
+    return this.compraServiceDash.getDashboard();
   }
 
+  
+  @Get(':id')
+    getCompraT(@Param("id") id: number): Promise<CompraT>{
+    return this.compraService.getCompraT(id);
+  }
 
 }
 

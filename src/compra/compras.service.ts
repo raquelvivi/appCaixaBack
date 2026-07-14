@@ -40,8 +40,7 @@ export class CompraTService {
 
   async getVendas (): Promise<CompraT[]> {
     const resultado = await this.comprasRepository.query
-    (`SELECT * FROM compraT
-      limit 10`);
+    (`SELECT * FROM compraT limit 10`);
 
     if (!resultado || resultado.length === 0) {
     return [];
@@ -80,23 +79,47 @@ export class CompraTService {
 
           //para cada item comprado, atualiza a quantidade do produto e insere o itemCompra
       for (let index = 0; index < item.length; index++) {
-        
+
         const element = item[index];
-        let quantCompra = element.quantAntesCompra - element.quantComprada;
-        if (quantCompra < 0) { // para não ter produtos com quantidade negativa
-          quantCompra = 0;
-        }
+        console.log('element', element);
+        const quantCompradaProdutosItemCompra = element.quantComprada;
+        var quantCompra = 1, totalVoltas = 5;
 
-        quantCompra = parseFloat(quantCompra.toFixed(3)); // arredonda para 2 casas decimais
-       
-        const updatePruduto = `UPDATE produto SET quant = $1 WHERE codigo = $2`;
-        await queryRunner.manager.query(updatePruduto, [quantCompra, String(element.id)]);
+        while (quantCompra != 0 && totalVoltas > 0) {
 
-      const insertItemCompra = `INSERT INTO itemCompra (quant, preco, fkproduto, fkcomprat) VALUES ($1, $2, $3, $4)`;
+          const getHistorico= `select id, quant from historicoprod where fkproduto = $1 and quant > 0 ORDER by validade asc LIMIT 1`;
+          const getIDHistoricoProduto = await queryRunner.manager.query(getHistorico, [String(element.id)]);
+
+          quantCompra = getIDHistoricoProduto[0].quant - element.quantComprada;
+          if (quantCompra < 0) { // para não ter produtos com quantidade negativa
+
+            const updatehistorico = `UPDATE historicoprod SET quant = 0 WHERE id = $1`;
+            await queryRunner.manager.query(updatehistorico, [String(getIDHistoricoProduto[0].id)]);
+
+            element.quantComprada = element.quantComprada - getIDHistoricoProduto[0].quant; // atualiza a quantidade do item comprado para o próximo loop
+
+            totalVoltas = totalVoltas - 1; // para não entrar em loop infinito caso não tenha produtos suficientes no estoque
+          }else {
+            quantCompra = parseFloat(quantCompra.toFixed(3)); // arredonda para 2 casas decimais
+          
+            const updatehistorico = `UPDATE historicoprod SET quant = $1 WHERE id = $2`;
+            await queryRunner.manager.query(updatehistorico, [quantCompra, String(getIDHistoricoProduto[0].id)]);
+
+            quantCompra = 0
+          }
+
+        
+
+      }
+
+      const getHistorico= `select id from historicoprod where fkproduto = $1 and quant > 0 ORDER by criado_em desc limit 1`;
+      const getIDHistoricoProduto = await queryRunner.manager.query(getHistorico, [String(element.id)]);
+
+      const insertItemCompra = `INSERT INTO itemCompra (quant, preco, fkhistoricop, fkcomprat) VALUES ($1, $2, $3, $4)`;
       await queryRunner.manager.query(insertItemCompra, [
-        element.quantComprada,
+        quantCompradaProdutosItemCompra,
         element.preco,
-        element.id,
+        getIDHistoricoProduto[0].id,
         compraFeita[0].id
       ]);  
         }
@@ -115,32 +138,32 @@ export class CompraTService {
 
 
 
-  async replaceCompraT(id: number, compra: CompraT): Promise<CompraT> {
-    const existingCompraT = await this.comprasRepository.findOne({ where: { id } });
+//   async replaceCompraT(id: number, compra: CompraT): Promise<CompraT> {
+//     const existingCompraT = await this.comprasRepository.findOne({ where: { id } });
 
-    if (!existingCompraT) {
-      throw new NotFoundException(`Usuário com id ${id} não encontrado`);
-    }
+//     if (!existingCompraT) {
+//       throw new NotFoundException(`Usuário com id ${id} não encontrado`);
+//     }
 
-    // substitui os dados
-    await this.comprasRepository.update(id, compra);
+//     // substitui os dados
+//     await this.comprasRepository.update(id, compra);
 
-    // busca o registro atualizado
-    let algo = await this.comprasRepository.findOne({ where: { id } });
+//     // busca o registro atualizado
+//     let algo = await this.comprasRepository.findOne({ where: { id } });
 
-    if (!algo) {
-      throw new NotFoundException(`{não foi possivel achar o dado modificado}`)
-    }
-    return algo
-  }
+//     if (!algo) {
+//       throw new NotFoundException(`{não foi possivel achar o dado modificado}`)
+//     }
+//     return algo
+//   }
 
 
-  async remove(id: number): Promise<void> {
-    const result = await this.comprasRepository.delete(id);
-    if (!result) {
-      throw new NotFoundException(`não deu para apagar o usuario com id: ${id}`);
-    }
-  }
+//   async remove(id: number): Promise<void> {
+//     const result = await this.comprasRepository.delete(id);
+//     if (!result) {
+//       throw new NotFoundException(`não deu para apagar o usuario com id: ${id}`);
+//     }
+//   }
 
 
 }

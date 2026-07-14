@@ -135,7 +135,8 @@ export class CompraTServiceDashboard {
     (`SELECT p.nome, CAST(SUM(i.quant) AS DECIMAL(10,2)) AS total_vendido, 
       CAST((i.preco * SUM(i.quant)) AS DECIMAL(10,2)) AS "ValorTotalVendido"
       FROM ItemCompra i
-      JOIN Produto p ON p.codigo = i.fkProduto
+      JOIN historicoprod hist on hist.id = i.fkhistoricop
+      JOIN Produto p ON p.codigo = hist.fkproduto
       JOIN CompraT c ON c.id = i.fkCompraT
       WHERE DATE_TRUNC('month', c.data) = DATE_TRUNC('month', CURRENT_DATE)
       GROUP BY p.nome, i.preco
@@ -157,7 +158,8 @@ export class CompraTServiceDashboard {
     (`SELECT p.nome, CAST(SUM(i.quant) AS DECIMAL(10,2)) AS total_vendido, 
       CAST((i.preco * SUM(i.quant)) AS DECIMAL(10,2)) AS valor_total_vendido
       FROM ItemCompra i
-      JOIN Produto p ON p.codigo = i.fkProduto
+	    JOIN historicoprod hist on hist.id = i.fkhistoricop
+      JOIN Produto p ON p.codigo = hist.fkProduto
       JOIN CompraT c ON c.id = i.fkCompraT
       WHERE DATE_TRUNC('month', c.data) = DATE_TRUNC('month', CURRENT_DATE)
       GROUP BY p.nome, i.preco
@@ -178,14 +180,15 @@ export class CompraTServiceDashboard {
     (`SELECT 
       p.codigo,
       p.nome,
-      p.quant,
+      sum(hist.quant) as quant,
       COALESCE(SUM(i.quant), 0) AS total_vendido
       FROM Produto p
-      LEFT JOIN ItemCompra i ON i.fkProduto = p.codigo
+	    JOIN historicoprod hist on hist.fkproduto = p.codigo
+      LEFT JOIN ItemCompra i ON i.fkhistoricop = hist.id
       LEFT JOIN CompraT c ON c.id = i.fkCompraT
-        AND c.data >= CURRENT_DATE - INTERVAL '30 days'
-      WHERE p.quant > 0
-      GROUP BY p.codigo, p.nome, p.quant
+      AND c.data >= CURRENT_DATE - INTERVAL '30 days'
+      WHERE hist.quant > 0
+      GROUP BY p.codigo, p.nome
       ORDER BY total_vendido ASC 
       LIMIT 5;
       `);

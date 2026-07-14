@@ -10,11 +10,13 @@ import { Despesas } from './despesa.entity';
 export class DespesasController {
   constructor(private readonly DespesasService: DespesasService) {}
 
+  
   //Pesquisa de todos os Despesas
   @Get()
   getDespesass(): Promise<Despesas[]> {
     return this.DespesasService.getDespesas();
   }
+
 
   //Cadastro de Despesas
   @Post()
@@ -22,9 +24,11 @@ export class DespesasController {
     return this.DespesasService.addDespesas(classDespesas);
   }
 
+
     ///////////////////////////////////////// FALTA FAZER
     //Pesquisa modifica e deleta pelo nome
     /////////////////////////////////////////
+
 
   //Deletar
   @Delete(':codigo')

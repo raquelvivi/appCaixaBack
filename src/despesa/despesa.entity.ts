@@ -3,21 +3,18 @@ import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 @Entity('despesas') // tabela já criada
 export class Despesas {
   @PrimaryGeneratedColumn()
-  id: number;
+  id!: number;
 
   @Column({ type: 'varchar', length: 10, nullable: true })
-  pagou: string | null;
+  pagou!: string | null;
 
   @Column()
-  valor: number;
+  valor!: number;
 
   @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP'})
-  data: Date | null;
+  data!: Date | null;
 
   @Column()
-  nome: string;
-
-  @Column()
-  fkaquisicao: number;
+  nome!: string;
 
 }

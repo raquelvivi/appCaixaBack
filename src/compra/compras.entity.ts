@@ -1,43 +1,47 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
-@Entity('CompraT') // tabela já criada
+@Entity('comprat') // tabela já criada
 export class CompraT {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
     @Column()
-    total: number;
+    total!: number;
 
     @Column()
-    pagamento: string;
+    pagamento!: string;
 
-    @Column({ nullable: true })
-    fkCliente: number;
+    @Column({ nullable:true })
+    fkcliente!: number;
+
+    @Column({ type:'date' })
+    data!: Date;
+
 
 }
 
 @Entity('ItemCompra') // tabela já criada
 export class ItemCompra {
     @PrimaryGeneratedColumn()
-    id: number;
+    id!: number;
 
     @Column()
-    nome: string;
+    quant!: number;
 
     @Column()
-    quantComprada: number;
+    preco!: number;
 
     @Column()
-    quantAntesCompra: number;
+    fkhistoricop!: string;
 
     @Column()
-    preco: number;
+    fkCompraT!: number;
 
     @Column()
-    fkProduto: string;
+    quantAntesCompra!: number;
 
     @Column()
-    fkCompraT: number;
+    quantComprada!: number;
 
 }
 
