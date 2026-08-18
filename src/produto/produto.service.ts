@@ -178,13 +178,13 @@ export class ProdService {
   // 3. Executamos a query que busca a menor validade de cada produto e filtra
   let vencidos = await this.histoRepository.query(`
     WITH dados_produto AS (
-        SELECT 
-            fkproduto,
-            SUM(quant) as total_quant,
-            MIN(validade) as validade_mais_antiga
-        FROM historicoprod
-        WHERE quant > 0
-        GROUP BY fkproduto
+      SELECT 
+          fkproduto,
+          SUM(quant) as total_quant,
+          MIN(validade) as validade_mais_antiga
+      FROM historicoprod
+      WHERE quant > 0
+      GROUP BY fkproduto
     )
     SELECT 
         p.codigo, 
@@ -192,9 +192,12 @@ export class ProdService {
         p.categoria, 
         p.quantminimo,
         dp.validade_mais_antiga as validade, 
+        hist.id as id_historico_validade, 
         dp.total_quant as quant
     FROM produto p
     JOIN dados_produto dp ON dp.fkproduto = p.codigo
+    JOIN historicoprod hist ON hist.fkproduto = dp.fkproduto 
+                          AND hist.validade = dp.validade_mais_antiga
     WHERE dp.validade_mais_antiga <= $1  
     ORDER BY dp.validade_mais_antiga ASC;
   `, [dataLimite]); 
@@ -206,9 +209,10 @@ export class ProdService {
       
       // Formata usando o padrão brasileiro, exibindo apenas Dia e Mês
       // O 'any' serve para aceitar a string formatada de volta no tipo do objeto
-      (prod as any).validade = dataObjeto.toLocaleDateString('pt-BR', {
-        day: '2-digit',
+      (prod as any).validade = dataObjeto.toLocaleDateString('pt-br' ,{
+        year: 'numeric',
         month: '2-digit',
+        day: '2-digit',
         timeZone: 'UTC' // Garante que o fuso horário não mude o dia para ontem ou amanhã
       });
     }
@@ -292,11 +296,11 @@ export class ProdService {
 
 
   //Editar a base do codigo de barras
-  // async replaceVali(codigo: string): Promise<boolean> {
-  //   const result = await this.prodRepository.update({ codigo: codigo }, { validade: null, quant: 0 });
+  async replaceVali(codigo: number): Promise<boolean> {
+    const result = await this.histoRepository.update({ id: codigo }, { validade: null, quant: 0 });
 
-  //   return result.affected !== 0;
-  // }
+    return result.affected !== 0;
+  }
 
   // async replaceProd(codigo: string, prod: Prod, HistoricoProd: historicoProd ): Promise<boolean> {
   //   const result = await this.prodRepository.update({ codigo: codigo }, prod);

@@ -53,11 +53,11 @@ export class ProdController {
     return this.ProdService.addProd(Prod, HistoricoProd, vendedor);
   }
 
-  // //Editar validade do produto
-  // @Put(':codigo')
-  // replaceVali(@Param('codigo') codigo: string): Promise<boolean> {
-  //   return this.ProdService.replaceVali(codigo);
-  // }
+  //Editar validade do produto
+  @Put(':codigo')
+  replaceVali(@Param('codigo') codigo: number): Promise<boolean> {
+    return this.ProdService.replaceVali(codigo);
+  }
 
   //  //Editar produto
   // @Put('product/:codigo')
