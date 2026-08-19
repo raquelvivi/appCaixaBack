@@ -35,7 +35,11 @@ export class CompraTServiceDashboard {
       ArraySevenDays,
       ProdutosMaisVendidos,
       ProdutosMaisLucrativos,
-      ProdutosMaisParados
+      ProdutosMaisParados,
+      ValorCompraTotalMesPorCategoria,
+      ProdutosSemEstoque,
+      TotalVendedores,
+      ultimaCompra
     ] = await Promise.all([
       
       this.getTotalHoje(), //Valor total das Compras de Hoje
@@ -46,7 +50,11 @@ export class CompraTServiceDashboard {
       this.getSevenDays(),  //Vendas dos ultimos 7 dias
       this.getProdutosMaisVendidos(),  // Produtos mais vendidos no mes
       this.getProdutosMaisLucrativos(),  // Produtos mais Lucrativos no mes
-      this.getProdutosMaisParados()  // Produtos mais Parados no mes, sem vendas, ou com poucas vendas
+      this.getProdutosMaisParados(),  // Produtos mais Parados no mes, sem vendas, ou com poucas vendas
+      this.getTotalPorCategoria(), // Categorias mais vendidas no mes
+      this.getProdutosSemEstoque(), // Produtos Sem Estoque
+      this.getVendedores(), // vendedores
+      this.getUltimaCompra(), //ultima compra feita
     ]);
     return {
       Financeiro: {
@@ -54,17 +62,24 @@ export class CompraTServiceDashboard {
         soma_total_mes: ValorCompraTotalMes,
         despesas_hoje: ValorDespesasHoje,
         despesas_mes: ValorDespesasMes,
-        Lucro_mes: Math.round((ValorCompraTotalMes - ValorDespesasMes) * 100) / 100 // Lucro do mês
+        Lucro_mes: Math.round((ValorCompraTotalMes - ValorDespesasMes) * 100) / 100, // Lucro do mês
       },
       Estoque:{
         Quantidade_produtos_No_Estoque: QuantidadeProdutos,
         Valor_Retido_no_Estoque: ValorDoEstoque,
+        Produtos_Sem_Estoque: ProdutosSemEstoque
       },
       Arrays:{
         Vendas_ultimos_7_dias: ArraySevenDays,
         Mais_Vendidos_mes: ProdutosMaisVendidos,
         Mais_Lucrativos_mes: ProdutosMaisLucrativos,
-        Mais_Parados_mes: ProdutosMaisParados
+        Mais_Parados_mes: ProdutosMaisParados,
+        Compra_Por_Categoria: ValorCompraTotalMesPorCategoria
+      },
+      Outros:{
+        vendedores: TotalVendedores,
+        ultima_Compra: ultimaCompra[0]
+
       }
     };
   }
@@ -83,7 +98,100 @@ export class CompraTServiceDashboard {
     return ValorCompraTotalMes[0].soma_total ?? 0;
   }
 
+   //Ultima Compra feita
+  async getUltimaCompra(): Promise<{total: number, data:String}> {
 
+    const ultimaCompra = await this.comprasRepository.query
+    (`select data, total from comprat
+      order by data desc
+      limit 1`);
+
+    if (!ultimaCompra) {
+    return {total: 0, data: ""};
+    }
+
+    return ultimaCompra ?? 0;
+  }
+
+  
+
+  //Total de vendedores
+  async getVendedores(): Promise<number> {
+
+    const vendedores = await this.comprasRepository.query
+    (`select count(*) as vendedor from vendedor;`);
+
+    if (!vendedores || vendedores.length === 0) {
+    return 0;
+  }
+    return vendedores[0].vendedor ?? 0;
+  }
+
+  //Total de produtos sem estoque
+  async getProdutosSemEstoque(): Promise<number> {
+
+    const ProdutosSemEstoque = await this.comprasRepository.query
+    (`
+      SELECT COUNT(*) AS quantidade_produtos_poucos
+      FROM (
+          SELECT
+              p.codigo,
+              p.nome,
+              p.quantminimo,
+              COALESCE(SUM(hp.quant), 0) AS quantidade_estoque
+          FROM Produto p
+          LEFT JOIN historicoProd hp
+              ON hp.fkproduto = p.codigo
+          GROUP BY
+              p.codigo,
+              p.nome,
+              p.quantminimo
+          HAVING COALESCE(SUM(hp.quant), 0) <= p.quantminimo
+      ) produtos_baixo_estoque;`);
+
+    if (!ProdutosSemEstoque || ProdutosSemEstoque.length === 0) {
+    return 0;
+  }
+    return ProdutosSemEstoque[0].quantidade_produtos_poucos ?? 0;
+  }
+
+
+  //Total por Mes por categoria
+  async getTotalPorCategoria(): Promise<[]> {
+
+    const ValorCompraTotalMesPorCategoria = await this.comprasRepository.query
+    (`SELECT
+    COALESCE(p.categoria, 'Sem categoria') AS categoria,
+    ROUND(
+        SUM(ic.quant * ic.preco)::numeric,
+        2
+    ) AS valor_total_vendido,
+    ROUND(
+        (SUM(ic.quant * ic.preco) / SUM(SUM(ic.quant * ic.preco)) OVER () * 100 )::numeric, 2) AS percentual
+        FROM ItemCompra ic
+        INNER JOIN CompraT ct
+            ON ct.id = ic.fkcomprat
+        INNER JOIN historicoProd hp
+            ON hp.id = ic.fkhistoricoP
+        INNER JOIN Produto p
+            ON p.codigo = hp.fkproduto
+        WHERE
+            ct.data >= DATE_TRUNC('month', CURRENT_DATE)
+            AND ct.data < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'
+        GROUP BY
+            COALESCE(p.categoria, 'Sem categoria')
+        ORDER BY
+            valor_total_vendido DESC
+        limit 5;
+      `);
+
+    if (!ValorCompraTotalMesPorCategoria || ValorCompraTotalMesPorCategoria.length === 0) {
+    return [];
+    }
+
+    return ValorCompraTotalMesPorCategoria ?? 0;
+  
+  }
 
  //Total por Hoje
   async getTotalHoje(): Promise<number> {

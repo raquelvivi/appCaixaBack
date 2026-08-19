@@ -5,11 +5,13 @@ export interface DashboardDTO {
     despesas_hoje: number;
     despesas_mes: number;
     Lucro_mes: number;
+    
   };
 
   Estoque: {
     Quantidade_produtos_No_Estoque: number;
     Valor_Retido_no_Estoque: number;
+    Produtos_Sem_Estoque: number
   };
 
   Arrays: {
@@ -17,5 +19,10 @@ export interface DashboardDTO {
     Mais_Vendidos_mes: any[];
     Mais_Lucrativos_mes: any[];
     Mais_Parados_mes: any[];
+    Compra_Por_Categoria: any[];
+  };
+  Outros: {
+    vendedores: number;
+    ultima_Compra: {};
   };
 }
