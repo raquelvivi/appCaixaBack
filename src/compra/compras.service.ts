@@ -61,21 +61,22 @@ export class CompraTService {
     
     const queryRunner = this.dataSource.createQueryRunner(); 
 
-    await queryRunner.connect(); // conecta ao banco
+    await queryRunner.connect(); 
 
-    await queryRunner.startTransaction(); // BEGIN, inicio da transação
+    await queryRunner.startTransaction(); 
     try{ 
 
       let totalV = 0;
+
       //calculo do valor total da compra
       for (let index = 0; index < item.length; index++) {
         const element = item[index];
         totalV = totalV + (element.quantComprada * element.preco);
       }
 
-      totalV = parseFloat(totalV.toFixed(2)); // arredonda para 2 casas decimais
+      totalV = parseFloat(totalV.toFixed(2)); 
       const insertCompraSql = `INSERT INTO compraT (total, pagamento) VALUES ($1, $2) RETURNING id`;
-      const compraFeita = await queryRunner.manager.query(insertCompraSql, [totalV, String(compraP || 'Dinheiro')]); // insere a compra e retorna o ID da compra feita
+      const compraFeita = await queryRunner.manager.query(insertCompraSql, [totalV, String(compraP || 'Dinheiro')]); 
 
           //para cada item comprado, atualiza a quantidade do produto e insere o itemCompra
       for (let index = 0; index < item.length; index++) {
@@ -83,33 +84,43 @@ export class CompraTService {
         const element = item[index];
         console.log('element', element);
         const quantCompradaProdutosItemCompra = element.quantComprada;
-        var quantCompra = 1, totalVoltas = 5;
+        var quantCompra = 1; //totalVoltas = 5
 
-        while (quantCompra != 0 && totalVoltas > 0) {
+        while (quantCompra != 0) { //&& totalVoltas > 0
 
           const getHistorico= `select id, quant from historicoprod where fkproduto = $1 and quant > 0 ORDER by validade asc LIMIT 1`;
-          const getIDHistoricoProduto = await queryRunner.manager.query(getHistorico, [String(element.id)]);
+          let getIDHistoricoProduto = await queryRunner.manager.query(getHistorico, [String(element.id)]);
+
+          if (getIDHistoricoProduto.length === 0) {
+
+              const getHistorico= `select id, quant from historicoprod where fkproduto = $1 ORDER by validade asc LIMIT 1`;
+              getIDHistoricoProduto = await queryRunner.manager.query(getHistorico, [String(element.id)]);
+          }
+
 
           quantCompra = getIDHistoricoProduto[0].quant - element.quantComprada;
-          if (quantCompra < 0) { // para não ter produtos com quantidade negativa
+          
+          //Editar o estoque
+          if (quantCompra <= 0) { 
 
             const updatehistorico = `UPDATE historicoprod SET quant = 0 WHERE id = $1`;
             await queryRunner.manager.query(updatehistorico, [String(getIDHistoricoProduto[0].id)]);
 
-            element.quantComprada = element.quantComprada - getIDHistoricoProduto[0].quant; // atualiza a quantidade do item comprado para o próximo loop
+            element.quantComprada = element.quantComprada - getIDHistoricoProduto[0].quant; 
 
-            totalVoltas = totalVoltas - 1; // para não entrar em loop infinito caso não tenha produtos suficientes no estoque
+            if(element.quantComprada <= 0 || getIDHistoricoProduto[0].quant <= 0){
+              quantCompra = 0; 
+            }
+
+            // totalVoltas = totalVoltas - 1; 
           }else {
-            quantCompra = parseFloat(quantCompra.toFixed(3)); // arredonda para 2 casas decimais
+            quantCompra = parseFloat(quantCompra.toFixed(3)); 
           
             const updatehistorico = `UPDATE historicoprod SET quant = $1 WHERE id = $2`;
             await queryRunner.manager.query(updatehistorico, [quantCompra, String(getIDHistoricoProduto[0].id)]);
 
             quantCompra = 0
           }
-
-        
-
       }
 
       const getHistorico= `select id from historicoprod where fkproduto = $1 and quant > 0 ORDER by criado_em desc limit 1`;
@@ -122,15 +133,17 @@ export class CompraTService {
         getIDHistoricoProduto[0].id,
         compraFeita[0].id
       ]);  
+
+
         }
-       await queryRunner.commitTransaction(); // COMMIT
-       return compraFeita[0].id; // retorna o ID da compra feita para o front
+       await queryRunner.commitTransaction(); 
+       return compraFeita[0].id; 
     }catch(error){
-      await queryRunner.rollbackTransaction(); // ROLLBACK, desfaz as operações feitas no banco
+      await queryRunner.rollbackTransaction(); 
       throw error;
     }finally {
 
-    await queryRunner.release(); // libera conexão do pool para não travar o banco
+    await queryRunner.release(); 
 
   }
   }

@@ -25,7 +25,7 @@ export class Prod {
 @Entity('historicoprod') // tabela já criada
 export class historicoProd {
   @PrimaryColumn()
-  id!: number;
+  id!: string;
 
   @Column()
   fkproduto!: string;

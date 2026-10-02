@@ -7,7 +7,7 @@ export interface DashboardDTO {
     Lucro_mes: number;
     
   };
-
+  
   Estoque: {
     Quantidade_produtos_No_Estoque: number;
     Valor_Retido_no_Estoque: number;

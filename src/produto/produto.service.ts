@@ -50,7 +50,6 @@ export class ProdService {
                 -- Cria um ranking para pegar a validade mais próxima de vencer
                 ROW_NUMBER() OVER(PARTITION BY fkproduto ORDER BY validade ASC) as rn_validade
             FROM historicoprod
-            WHERE quant > 0
         ),
         dados_produto AS (
             SELECT 
@@ -94,7 +93,6 @@ export class ProdService {
                 -- Cria um ranking para pegar a validade mais próxima de vencer
                 ROW_NUMBER() OVER(PARTITION BY fkproduto ORDER BY validade ASC) as rn_validade
             FROM historicoprod
-            WHERE quant > 0
         ),
         dados_produto AS (
             SELECT 
@@ -138,7 +136,6 @@ export class ProdService {
                 -- Cria um ranking para pegar a validade mais próxima de vencer
                 ROW_NUMBER() OVER(PARTITION BY fkproduto ORDER BY validade ASC) as rn_validade
             FROM historicoprod
-            WHERE quant > 0
         ),
         dados_produto AS (
             SELECT 
@@ -223,10 +220,14 @@ export class ProdService {
   async getProdRepo(): Promise<historicoProd[]> {
     try {
       const algo = await this.histoRepository.query(`
-        select SUM(h.quant) as quant, p.nome, p.codigo from historicoProd h
-        join produto p on p.codigo = h.fkproduto
-        where h.quant <= p.quantminimo
+        SELECT 
+            SUM(h.quant) AS quant, 
+            p.nome, 
+            p.codigo 
+        FROM historicoProd h
+        JOIN produto p ON p.codigo = h.fkproduto
         GROUP BY p.nome, p.codigo
+        HAVING SUM(h.quant) <= p.quantminimo;
         `)
 
       return algo;
@@ -296,21 +297,84 @@ export class ProdService {
 
 
   //Editar a base do codigo de barras
-  async replaceVali(codigo: number): Promise<boolean> {
+  async replaceVali(codigo: string): Promise<boolean> {
     const result = await this.histoRepository.update({ id: codigo }, { validade: null, quant: 0 });
 
     return result.affected !== 0;
   }
 
-  // async replaceProd(codigo: string, prod: Prod, HistoricoProd: historicoProd ): Promise<boolean> {
-  //   const result = await this.prodRepository.update({ codigo: codigo }, prod);
+  async replaceProd(codigo: string, prod: Prod, HistoricoProd: historicoProd ): Promise<boolean> {
 
-  //   // const result2 = await this.histoRepository.update({ id: codigo }, prod);
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); //conexao aberta
 
-  //   return result.affected !== 0;
-  // }
+    try {
+      await queryRunner.manager.update(Prod,{ codigo: codigo }, prod);
+
+    const id = await queryRunner.manager.query(`
+      SELECT 
+          h.id
+      FROM 
+          Produto p
+      JOIN 
+          historicoProd h ON p.codigo = h.fkproduto
+      where p.codigo = $1
+      order by h.criado_em desc
+      limit 1`,[codigo]);
+
+      console.log('ID do histórico mais recente:', id[0]?.id);
+
+      if (!id[0]?.id) {
+        throw new Error('Histórico do produto não encontrado');
+      } else{
+        await queryRunner.manager.update(historicoProd,{ id: id[0]?.id }, {quant: HistoricoProd.quant});
+      }
+
+      await queryRunner.manager.save(Despesas, {
+        valor: HistoricoProd.precocompra * HistoricoProd.quant,
+        nome: `compra de ${prod.nome}`,
+        pagou: 'sim',
+      });
+
+    await queryRunner.commitTransaction(); //conexao fechada
+      return true;
+    } catch (err) {
+      await queryRunner.rollbackTransaction(); //deu merda, desfaz tudo
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
+
+async createNewHistorico(codigo: string, prod: Prod, HistoricoProd: historicoProd ): Promise<boolean> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); //conexao aberta
 
 
+    try {
+
+    await queryRunner.manager.update(Prod, { codigo: codigo }, prod);
+
+    await queryRunner.manager.save(historicoProd,HistoricoProd);
+
+    // Salvar a despesa
+      await queryRunner.manager.save(Despesas, {
+        valor: HistoricoProd.precocompra * HistoricoProd.quant,
+        nome: `compra de ${prod.nome}`,
+        pagou: 'sim',
+      });
+
+      await queryRunner.commitTransaction(); //conexao fechada
+      return true;
+    } catch (err) {
+      await queryRunner.rollbackTransaction(); //deu merda, desfaz tudo
+      throw err;
+    } finally {
+      await queryRunner.release();
+    }
+  }
 
 
 

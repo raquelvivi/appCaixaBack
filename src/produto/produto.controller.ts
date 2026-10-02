@@ -10,6 +10,7 @@ import { Prod, historicoProd, ProdutoComHistorico  } from './produto.entity';
 export class ProdController {
   constructor(private readonly ProdService: ProdService) {}
 
+
   //Pesquisa de todos os produtos
   @Get()
   getProds(): Promise<ProdutoComHistorico[]> {
@@ -53,17 +54,37 @@ export class ProdController {
     return this.ProdService.addProd(Prod, HistoricoProd, vendedor);
   }
 
+  
+
   //Editar validade do produto
   @Put(':codigo')
-  replaceVali(@Param('codigo') codigo: number): Promise<boolean> {
+  replaceVali(@Param('codigo') codigo: string): Promise<boolean> {
     return this.ProdService.replaceVali(codigo);
   }
 
-  //  //Editar produto
-  // @Put('product/:codigo')
-  // replaceProd(@Param('codigo') codigo: string,@Body() Prod: Prod): Promise<boolean> {
-  //   return this.ProdService.replaceProd(codigo, Prod);
-  // }
+   //Editar produto
+  @Put('product/:codigo')
+  replaceProd(@Param('codigo') codigo: string,
+    @Body('prod') Prod: Prod,
+    @Body('historico') HistoricoProd: historicoProd): 
+      Promise<boolean> {
+
+      console.log('HistoricoProd: ', HistoricoProd);
+      console.log('Prod: ', Prod);
+      return this.ProdService.replaceProd(codigo, Prod, HistoricoProd);
+  }
+
+  //Editar produto
+  @Post('product/:codigo')
+  createNewHistorico(@Param('codigo') codigo: string,
+    @Body('prod') Prod: Prod,
+    @Body('historico') HistoricoProd: historicoProd): 
+      Promise<boolean> {
+
+      console.log('HistoricoProd: ', HistoricoProd);
+      console.log('Prod: ', Prod);
+      return this.ProdService.createNewHistorico(codigo, Prod, HistoricoProd);
+  }
 
 
   //   ///////////////////////////////////////// FALTA FAZER

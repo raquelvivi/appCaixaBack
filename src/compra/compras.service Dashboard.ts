@@ -24,6 +24,7 @@ export class CompraTServiceDashboard {
     private readonly prodService: ProdService
   ) { }
 
+  
   //Dashboard Completo
   async getDashboard(): Promise<DashboardDTO> {
     const [
@@ -79,7 +80,6 @@ export class CompraTServiceDashboard {
       Outros:{
         vendedores: TotalVendedores,
         ultima_Compra: ultimaCompra[0]
-
       }
     };
   }
